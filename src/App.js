@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import {Search, MapPin, Wind} from 'react-feather'
-import getWeather from './api/api';
+import { getWeather, getWeatherByLocation } from './api/api';
 import { useState } from 'react';
 import dateFormat from 'dateformat';
 
@@ -15,6 +15,27 @@ function App() {
     setWeather(weatherData);
     setCity("")
   }
+  // Function to detect user location and fetch weather based on coordinates
+  const getWeatherbyLocation = async () => {
+    if (navigator.geolocation) {
+      
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          const weatherData = await getWeatherByLocation(latitude, longitude);
+          setWeather(weatherData);
+          
+        },
+        (error) => {
+          console.error('Error detecting location:', error);
+          alert('Location detection failed. Please search by city.');
+          
+        }
+      );
+    } else {
+      alert('Geolocation is not supported by this browser.');
+    }
+  };
 
   const renderDate = () =>{
     let cur = new Date();
@@ -26,11 +47,17 @@ function App() {
       <h1>Weather App</h1>
       <div className="input-wrapper">
         <input type="text"  value={city} onChange={(e) => setCity(e.target.value)}
-        placeholder='Enter City Name'/>
+        placeholder='Enter City Name' onKeyDown={(e) => e.key === 'Enter' && getWeatherbyCity()}/>
         <button onClick={()=>getWeatherbyCity()}>
           <Search></Search>
         </button>
+        
       </div>
+      <div className='d-flex'>
+      <button className='btn' onClick={getWeatherbyLocation} >
+       Use Current Location <Search style={{paddingLeft:"5px"}}></Search>
+      </button>
+      </div>   
 
      {weather && weather.weather ?
       <div className="content">

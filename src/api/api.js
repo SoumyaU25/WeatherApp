@@ -6,6 +6,21 @@ const getWeather = async (city)=>{
     .then((json) =>{
         return json;
     })
+    .catch((error) => {
+        console.error("Error fetching weather by city:", error);
+    });
 }
 
-export default getWeather;
+// Function to fetch weather by latitude and longitude (location-based)
+const getWeatherByLocation = async (lat, lon) => {
+    return await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apikey}&units=metric`)
+        .then((res) => res.json())
+        .then((json) => {
+            return json;
+        })
+        .catch((error) => {
+            console.error("Error fetching weather by location:", error);
+        });
+}
+
+export { getWeather, getWeatherByLocation };
